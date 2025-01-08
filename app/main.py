@@ -37,6 +37,13 @@ response = requests.get(
     f"{BASE_URL}/app", headers={"Authorization": f"Bearer {API_KEY}"}, verify=False
 )
 
+if response.status_code != 200:
+    logger.error(f"Failed to get apps: {response.status_code}")
+    send_notification(
+        "Error", f"Failed to get apps on {BASE_URL}: {response.status_code}"
+    )
+    exit(1)
+
 apps = response.json()
 
 apps_with_upgrade = [app for app in apps if app["upgrade_available"]]
