@@ -2,6 +2,7 @@ import logging
 import os
 import time
 
+import apprise
 import requests
 
 logging.basicConfig(level=logging.INFO)
@@ -9,9 +10,25 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
+APPRISE_URLS = os.getenv("APPRISE_URLS", "").strip()
+
+# Initialize Apprise
+apobj = apprise.Apprise()
+if APPRISE_URLS:
+    for url in APPRISE_URLS.split(","):
+        apobj.add(url.strip())
+
+
+def send_notification(title, message):
+    """Send notification using Apprise if configured"""
+    if APPRISE_URLS:
+        apobj.notify(title=title, body=message)
+        logger.info(f"Notification sent: {title}")
+
 
 if not BASE_URL or not API_KEY:
     logger.error("BASE_URL or API_KEY is not set")
+    send_notification("Configuration Error", "BASE_URL or API_KEY is not set")
     exit(1)
 
 BASE_URL = BASE_URL + "/api/v2.0"
@@ -29,12 +46,18 @@ logger.info(f"Found {len(apps_with_upgrade)} apps with upgrade available")
 
 def await_job(job_id):
     logger.info(f"Waiting for job {job_id} to complete...")
-    return requests.post(
+    job = requests.post(
         f"{BASE_URL}/core/job_wait",
         headers={"Authorization": f"Bearer {API_KEY}"},
         json=job_id,
         verify=False,
     )
+
+    if job.status_code != 200:
+        logger.error(f"Failed to wait for job {job_id}: {job.status_code}")
+        return None
+
+    return job
 
 
 for app in apps_with_upgrade:
@@ -46,13 +69,22 @@ for app in apps_with_upgrade:
         verify=False,
     )
 
+    if response.status_code != 200:
+        error_msg = f"Failed to upgrade {app['name']}: {response.status_code}"
+        logger.error(error_msg)
+        send_notification("Upgrade Failed", error_msg)
+        continue
+
     job_id = response.text
     response = await_job(job_id)
 
     if response.status_code == 200:
-        logger.info(f"Upgrade of {app['name']} triggered successfully")
+        success_msg = f"Upgrade of {app['name']} triggered successfully"
+        logger.info(success_msg)
     else:
-        logger.error(f"Failed to upgrade {app['name']}: {response.status_code}")
+        error_msg = f"Failed to upgrade {app['name']}: {response.status_code}"
+        logger.error(error_msg)
+        send_notification("Upgrade Failed", error_msg)
 
     time.sleep(1)
 
