@@ -6,7 +6,8 @@ Yes, I know what you're thinking - "You shouldn't auto-update your TrueNAS apps!
 
 - `BASE_URL`: Your TrueNAS SCALE instance URL (e.g., `https://truenas.local`)
 - `API_KEY`: Your TrueNAS API key (can be generated in the UI under System Settings → API Keys)
-- `CRON_SCHEDULE`: Cron schedule for when to check for updates (e.g., `0 4 * * *` for daily at 4 AM)
+- `CRON_SCHEDULE`: Cron schedule for when to check for updates (e.g., `0 4 * * *` for daily at 4 AM). If not set, the script will run once and then exit.
+- `APPRISE_URLS`: Apprise URLs to send notifications to (e.g., `https://example.com/apprise,https://example.com/apprise2`) More info on [Apprise](https://github.com/caronc/apprise)
 
 ## Getting Started
 
