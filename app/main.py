@@ -33,9 +33,14 @@ if not BASE_URL or not API_KEY:
 
 BASE_URL = BASE_URL + "/api/v2.0"
 
-response = requests.get(
-    f"{BASE_URL}/app", headers={"Authorization": f"Bearer {API_KEY}"}, verify=False
-)
+try:
+    response = requests.get(
+        f"{BASE_URL}/app", headers={"Authorization": f"Bearer {API_KEY}"}, verify=False
+    )
+except Exception as e:
+    logger.error(f"Failed to get apps: {str(e)}")
+    send_notification("Error", f"Failed to get apps on {BASE_URL}: {str(e)}")
+    exit(1)
 
 if response.status_code != 200:
     logger.error(f"Failed to get apps: {response.status_code}")
