@@ -20,10 +20,13 @@ Yes, I know what you're thinking - "You shouldn't auto-update your TrueNAS apps!
 2. Run the container:
 
 ```bash
-docker run -e BASE_URL=https://your-truenas-url \
-          -e API_KEY=your-api-key \
-          -e CRON_SCHEDULE="0 4 * * *" \
-          ghcr.io/marvinvr/truenas-auto-update
+docker run --name truenas-auto-update \
+         --restart unless-stopped \
+         -e BASE_URL=https://your-truenas-url \
+         -e API_KEY=your-api-key \
+         -e CRON_SCHEDULE="0 4 * * *" \
+         -e APPRISE_URLS="https://example.com/apprise,https://example.com/apprise2" \
+         ghcr.io/marvinvr/truenas-auto-update
 ```
 
 ## Disclaimer
