@@ -8,6 +8,7 @@ Yes, I know what you're thinking - "You shouldn't auto-update your TrueNAS apps!
 - `API_KEY`: Your TrueNAS API key (can be generated in the UI under System Settings → API Keys)
 - `CRON_SCHEDULE`: Cron schedule for when to check for updates (e.g., `0 4 * * *` for daily at 4 AM). If not set, the script will run once and then exit.
 - `APPRISE_URLS`: Apprise URLs to send notifications to (e.g., `https://example.com/apprise,https://example.com/apprise2`) More info on [Apprise](https://github.com/caronc/apprise)
+- `NOTIFY_ON_SUCCESS`: Set to "true" to receive notifications when apps are successfully updated (default: "false")
 
 ## Getting Started
 
@@ -26,6 +27,7 @@ docker run --name truenas-auto-update \
          -e API_KEY=your-api-key \
          -e CRON_SCHEDULE="0 4 * * *" \
          -e APPRISE_URLS="https://example.com/apprise,https://example.com/apprise2" \
+         -e NOTIFY_ON_SUCCESS="true" \
          ghcr.io/marvinvr/truenas-auto-update
 ```
 

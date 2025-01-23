@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
 APPRISE_URLS = os.getenv("APPRISE_URLS", "").strip()
+NOTIFY_ON_SUCCESS = os.getenv("NOTIFY_ON_SUCCESS", "false").lower() == "true"
 
 # Initialize Apprise
 apobj = apprise.Apprise()
@@ -93,6 +94,8 @@ for app in apps_with_upgrade:
     if response.status_code == 200:
         success_msg = f"Upgrade of {app['name']} triggered successfully"
         logger.info(success_msg)
+        if NOTIFY_ON_SUCCESS:
+            send_notification("App Updated", f"Successfully updated {app['name']} to the latest version")
     else:
         error_msg = f"Failed to upgrade {app['name']}: {response.status_code}"
         logger.error(error_msg)
