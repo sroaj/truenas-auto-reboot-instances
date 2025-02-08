@@ -6,6 +6,7 @@ if [ -n "$CRON_SCHEDULE" ]; then
 
     # Process the crontab file with environment variables
     envsubst < /etc/cron.d/app-cron > /etc/cron.d/app-cron.tmp
+    sed -i -e 's|\"||g' /etc/cron.d/app-cron
     mv /etc/cron.d/app-cron.tmp /etc/cron.d/app-cron
     chmod 0644 /etc/cron.d/app-cron
 
