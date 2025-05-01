@@ -12,6 +12,7 @@ BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
 APPRISE_URLS = os.getenv("APPRISE_URLS", "").strip()
 NOTIFY_ON_SUCCESS = os.getenv("NOTIFY_ON_SUCCESS", "false").lower() == "true"
+SKIP_APPS = [app.strip() for app in os.getenv("SKIP_APPS", "").strip().split(",") if app.strip()]
 
 # Initialize Apprise
 apobj = apprise.Apprise()
@@ -52,9 +53,15 @@ if response.status_code != 200:
 
 apps = response.json()
 
-apps_with_upgrade = [app for app in apps if app["upgrade_available"]]
+# Filter out apps that should be skipped
+apps_with_upgrade = [
+    app for app in apps 
+    if app["upgrade_available"] and app["name"] not in SKIP_APPS
+]
 
 logger.info(f"Found {len(apps_with_upgrade)} apps with upgrade available")
+if SKIP_APPS:
+    logger.info(f"Skipping updates for: {', '.join(SKIP_APPS)}")
 
 
 def await_job(job_id):
