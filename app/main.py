@@ -53,16 +53,9 @@ if response.status_code != 200:
 
 apps = response.json()
 
-# Filter out apps that should be skipped
-apps_with_upgrade = [
-    app for app in apps 
-    if app["upgrade_available"] and app["name"] not in SKIP_APPS
-]
+apps_with_upgrade = [app for app in apps if app["upgrade_available"]]
 
 logger.info(f"Found {len(apps_with_upgrade)} apps with upgrade available")
-if SKIP_APPS:
-    logger.info(f"Skipping updates for: {', '.join(SKIP_APPS)}")
-
 
 def await_job(job_id):
     logger.info(f"Waiting for job {job_id} to complete...")
@@ -81,13 +74,17 @@ def await_job(job_id):
 
 
 for app in apps_with_upgrade:
-    logger.info(f"Upgrading {app['name']}...")
-    response = requests.post(
-        f"{BASE_URL}/app/upgrade",
-        headers={"Authorization": f"Bearer {API_KEY}"},
-        json={"app_name": app["id"]},
-        verify=False,
-    )
+    if app["name"] in SKIP_APPS:
+        logger.info(f"Skipping upgrade for: {app['name']}")
+        continue
+    else:
+        logger.info(f"Upgrading {app['name']}...")
+        response = requests.post(
+            f"{BASE_URL}/app/upgrade",
+            headers={"Authorization": f"Bearer {API_KEY}"},
+            json={"app_name": app["id"]},
+            verify=False,
+        )
 
     if response.status_code != 200:
         error_msg = f"Failed to upgrade {app['name']}: {response.status_code}"
