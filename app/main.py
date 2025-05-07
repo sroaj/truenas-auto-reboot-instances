@@ -77,14 +77,14 @@ for app in apps_with_upgrade:
     if app["name"] in SKIP_APPS:
         logger.info(f"Skipping upgrade for: {app['name']}")
         continue
-    else:
-        logger.info(f"Upgrading {app['name']}...")
-        response = requests.post(
-            f"{BASE_URL}/app/upgrade",
-            headers={"Authorization": f"Bearer {API_KEY}"},
-            json={"app_name": app["id"]},
-            verify=False,
-        )
+        
+    logger.info(f"Upgrading {app['name']}...")
+    response = requests.post(
+        f"{BASE_URL}/app/upgrade",
+        headers={"Authorization": f"Bearer {API_KEY}"},
+        json={"app_name": app["id"]},
+        verify=False,
+    )
 
     if response.status_code != 200:
         error_msg = f"Failed to upgrade {app['name']}: {response.status_code}"
