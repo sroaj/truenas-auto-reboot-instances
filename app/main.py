@@ -80,10 +80,10 @@ def await_job(job_id):
 
 for app in apps_with_upgrade:
     if EXCLUDE_APPS and app["name"] in EXCLUDE_APPS:
-        logger.info(f"Skipping upgrade for: {app['name']}")
+        logger.info(f"Skipping upgrade for: {app['name']} (APP in EXCLUDE_APPS)")
         continue
     if INCLUDE_APPS and app["name"] not in INCLUDE_APPS:
-        logger.info(f"Skipping upgrade for: {app['name']} (not in INCLUDE_APPS)")
+        logger.info(f"Skipping upgrade for: {app['name']} (APP not in INCLUDE_APPS)")
         continue
         
     logger.info(f"Upgrading {app['name']}...")
