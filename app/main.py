@@ -12,7 +12,12 @@ BASE_URL = os.getenv("BASE_URL")
 API_KEY = os.getenv("API_KEY")
 APPRISE_URLS = os.getenv("APPRISE_URLS", "").strip()
 NOTIFY_ON_SUCCESS = os.getenv("NOTIFY_ON_SUCCESS", "false").lower() == "true"
-SKIP_APPS = [app.strip() for app in os.getenv("SKIP_APPS", "").strip().split(",") if app.strip()]
+EXCLUDE_APPS = [app.strip() for app in os.getenv("EXCLUDE_APPS", "").strip().split(",") if app.strip()]
+INCLUDE_APPS = [app.strip() for app in os.getenv("INCLUDE_APPS", "").strip().split(",") if app.strip()]
+
+if EXCLUDE_APPS and INCLUDE_APPS:
+    logger.error("Cannot use both EXCLUDE_APPS and INCLUDE_APPS simultaneously")
+    exit(1)
 
 # Initialize Apprise
 apobj = apprise.Apprise()
@@ -74,8 +79,11 @@ def await_job(job_id):
 
 
 for app in apps_with_upgrade:
-    if app["name"] in SKIP_APPS:
+    if EXCLUDE_APPS and app["name"] in EXCLUDE_APPS:
         logger.info(f"Skipping upgrade for: {app['name']}")
+        continue
+    if INCLUDE_APPS and app["name"] not in INCLUDE_APPS:
+        logger.info(f"Skipping upgrade for: {app['name']} (not in INCLUDE_APPS)")
         continue
         
     logger.info(f"Upgrading {app['name']}...")
