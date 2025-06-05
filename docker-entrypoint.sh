@@ -21,5 +21,5 @@ if [ -n "$CRON_SCHEDULE" ]; then
     tail -f /var/log/cron.log
 else
     echo "No CRON_SCHEDULE set, running script once..."
-    python main.py
+    /usr/bin/env python3 main.py
 fi

@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd /app
-/usr/local/bin/python main.py 
+/usr/bin/env python3 main.py
