@@ -1,31 +1,33 @@
-FROM python:3.12-slim
+FROM python:3.12.10-slim
+# The above versions should be automatically updated by dependabot
+# Hence minor versions are used to ensure a more frequent build to
+# catch regressions from new minor version earlier
 
-# Install required packages
-RUN apt-get update && \
-    apt-get install -y \
-    cron \
-    gettext-base && \
-    rm -rf /var/lib/apt/lists/*
+LABEL org.opencontainers.image.source=https://github.com/sroaj/truenas-auto-reboot-instances
+LABEL org.opencontainers.image.description="Automatically Reboot TrueNAS 25.04 VM and LXC when in ERROR"
+LABEL org.opencontainers.image.licenses=MIT
 
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
 # Copy the application
-COPY app/ .
-
-# Copy scripts and make them executable
-COPY docker-entrypoint.sh /app/
-COPY run-script.sh /app/
-RUN chmod +x /app/docker-entrypoint.sh /app/run-script.sh
-
-# Create log file
-RUN touch /var/log/cron.log
+COPY app docker-entrypoint.sh run-script.sh .
 
 # Copy crontab file
 COPY crontab /etc/cron.d/app-cron
+
+# Install required packages and run required cmds
+RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
+    --mount=target=/var/cache/apt,type=cache,sharing=locked \
+    --mount=target=/root/.cache/pip,type=cache \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+    && apt-get update \
+    && apt-get -y --no-install-recommends install \
+    cron \
+    gettext-base && \
+    rm -rf /var/lib/apt/lists/* && \
+    touch /var/log/cron.log && \
+    pip install https://github.com/truenas/api_client/archive/master.zip && \
+    chmod --verbose +x docker-entrypoint.sh run-script.sh main.py
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
