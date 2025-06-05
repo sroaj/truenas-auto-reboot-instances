@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd /app
-/usr/local/bin/python main.py 
+/usr/local/bin/python main.py
