@@ -10,6 +10,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build docker images
-      run: docker build -t local - < Dockerfile
+      run: docker build -t local -f Dockerfile .
     - name: Run tests
       run: docker run -t -e _TEST_PYTHON_TEST_MODE=true local
