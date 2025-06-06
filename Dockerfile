@@ -4,7 +4,7 @@ FROM python:3.12.10-slim
 # catch regressions from new minor version earlier
 
 LABEL org.opencontainers.image.source=https://github.com/sroaj/truenas-auto-reboot-instances
-LABEL org.opencontainers.image.description="Automatically Reboot TrueNAS 25.04 VM and LXC when in ERROR"
+LABEL org.opencontainers.image.description="Automatically restart TrueNAS instances that are in ERROR or other status"
 LABEL org.opencontainers.image.licenses=MIT
 
 # Set working directory

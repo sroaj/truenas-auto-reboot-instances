@@ -1,4 +1,4 @@
-name: Docker CI
+name: Build and test using Docker
 on:
   push:
     branches: [ main ]

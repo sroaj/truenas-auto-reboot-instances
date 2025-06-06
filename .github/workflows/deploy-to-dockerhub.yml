@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy to Docker Hub
 on:
   push:
     branches: [ main ]
