@@ -26,11 +26,12 @@ jobs:
 
       - name: Run tests
         id: tests
-        run: docker run -t -e _TEST_PYTHON_TEST_MODE=true local | grep = >> "$GITHUB_OUTPUT"
+        run: docker run -t -e _TEST_PYTHON_TEST_MODE=true local | grep = | tr -cd '[:print:]' >> "$GITHUB_OUTPUT"
 
       - name: Set python version tag
         run: |
           tag=v${{ steps.tests.outputs.major }}.${{ steps.tests.outputs.minor }}.${{ steps.tests.outputs.micro }}
+          echo "${tag}" | xxd
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git tag "${tag}" -f
