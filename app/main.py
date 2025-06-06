@@ -33,7 +33,13 @@ if _TEST_PYTHON_TEST_MODE:
     # Python test mode ensures that python can execute file and the imports statements work
     # it DOES NOT test that the program actually works
     import sys
-    logger.info(sys.version_info)
+    version_info = sys.version_info
+    print("\n".join([
+        f"major={version_info.major}",
+        f"minor={version_info.minor}",
+        f"micro={version_info.micro}"
+        ])
+    )
     exit(0)
 
 
