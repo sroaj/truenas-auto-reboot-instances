@@ -1,5 +1,11 @@
 # TrueNAS Auto Reboot Instances
 
+[![Build Status](https://github.com/sroaj/truenas-auto-reboot-instances/actions/workflows/build-docker.yml/badge.svg)](https://github.com/sroaj/truenas-auto-reboot-instances/actions/workflows/build-docker.yml)
+[![DockerHub Deploy](https://github.com/sroaj/truenas-auto-reboot-instances/actions/workflows/deploy-to-dockerhub.yml/badge.svg)](https://github.com/sroaj/truenas-auto-reboot-instances/actions/workflows/deploy-to-dockerhub.yml)
+[![Dependabot Checks](https://github.com/sroaj/truenas-auto-reboot-instances/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/sroaj/truenas-auto-reboot-instances/actions/workflows/dependabot/dependabot-updates)
+[![Dependabot PRs](https://github.com/sroaj/truenas-auto-reboot-instances/actions/workflows/automerge-dependabot-prs.yml/badge.svg)](https://github.com/sroaj/truenas-auto-reboot-instances/actions/workflows/automerge-dependabot-prs.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 This docker image is used to periodically check the status of the instances vms on a TrueNAS system, and then stop and start the instance if the instance vm is in one of the specified action statuses.
 
 This image uses TrueNAS JSON-RPC 2.0 over WebSocket API via [TrueNAS API Client](https://github.com/truenas/api_client), but is only tested on a 25.04.01 system with the incus virtual machines so far.
@@ -15,7 +21,7 @@ Code heavily based on:
 The environment variable `BASE_ADDRESS` and `API_KEY` should be provided, unless operation in Local IPC mode is desired which requires presence of `middlewared.sock` locally and doesn't require any environment variable be passed.
 
 - `BASE_ADDRESS` (_optional_): Your TrueNAS SCALE api address (e.g., `192.168.0.111` or `192.168.0.111:8443`). If not set, local IPC will be used.
-- `API_KEY`: Your TrueNAS API key (can be generated in the UI under System Settings → API Keys). This is required when `BASE_ADDRESS` is set nad `PROTOCOL` is not `ws+unix://`.
+- `API_KEY` (_optional_): Your TrueNAS API key (can be generated in the UI under System Settings → API Keys). This is required when `BASE_ADDRESS` is set and `PROTOCOL` is not `ws+unix://`.
 - `CRON_SCHEDULE` (_optional_): Cron schedule for when to check instance status (e.g., `*/2 * * * *` for every 2nd minute). If not set, the script will run once and then exit.
 - `ACTION_STATUS` (_optional_): Comma-separated list of statuses of instances to perform stop and start on. The full list is available at [virt.instance.query → Return Value → status](https://api.truenas.com/v25.04.1/api_methods_virt.instance.query.html). If not set, `ERROR,UNKNOWN` will be used.
 - `EXCLUDE_APPS` (_optional_): Comma-separated list of app names to skip during updates (e.g., `app1,app2`). This is useful if you want to exclude certain apps from being updated automatically.
@@ -39,7 +45,7 @@ This container can operate in 2 modes:
 1. WebSocket API
 2. Local IPC
 
-The operation mode can be set to Local IPC by either not providing `BASE_ADDRESS`, or providing `ws+unix://` as the `PROTOCOL` environment and specifying .
+The operation mode can be set to Local IPC by either not providing `BASE_ADDRESS`, or providing all of the following: `ws+unix://` as the `PROTOCOL` environment, specifying `BASE_ADDRESS` as `/var/run/middleware`,  and `API_PATH` as `middlewared.sock`.
 
 WebSocket API mode will, by default, connect to SSL/TLS WebSocket API, but will NOT verify the certificate. This is to facilitate usage in simple or testing environment where no externally signed SSL/TLS certificate or roots are setup.
 
@@ -110,5 +116,4 @@ docker run --name truenas-auto-reboot-instances \
 5. Install the app
 6. (_optional_) Review the app logs to ensure it's working as expected
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
