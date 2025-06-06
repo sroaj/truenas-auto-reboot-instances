@@ -30,11 +30,8 @@ jobs:
         with:
           images: sroaj/truenas-auto-reboot-instances
           tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=tag
-            type=ref,event=pr
-            type=raw,value=latest
+            # set latest tag for default branch
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -46,6 +43,7 @@ jobs:
         id: push
         uses: docker/build-push-action@v6
         with:
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -56,3 +54,11 @@ jobs:
           subject-name: index.docker.io/sroaj/truenas-auto-reboot-instances
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+
+      - name: Docker Hub Description
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: sroaj/truenas-auto-reboot-instances
+          short-description: ${{ github.event.repository.description }}
