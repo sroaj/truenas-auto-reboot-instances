@@ -29,6 +29,12 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: sroaj/truenas-auto-reboot-instances
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=raw,value=latest
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
