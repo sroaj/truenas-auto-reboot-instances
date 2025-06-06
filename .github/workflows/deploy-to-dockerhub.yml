@@ -29,12 +29,14 @@ jobs:
         run: docker run -t -e _TEST_PYTHON_TEST_MODE=true local | grep = >> "$GITHUB_OUTPUT"
 
       - name: Set python version tag
-        uses: actions-ecosystem/action-push-tag@v1
-        with:
-          tag: v${{ steps.tests.outputs.major }}.${{ steps.tests.outputs.minor }}.${{ steps.tests.outputs.micro }}
-
-      - name: Run latest-tag
-        uses: EndBug/latest-tag@latest
+        run: |
+          tag=v${{ steps.tests.outputs.major }}.${{ steps.tests.outputs.minor }}.${{ steps.tests.outputs.micro }}
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git tag "${tag}" -f
+          git tag "latest" -f
+          git push origin "${tag}" -f
+          git push origin "latest" -f
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
