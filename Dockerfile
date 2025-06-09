@@ -1,4 +1,4 @@
-FROM python:3.12.10-slim
+FROM python:3.13.4-slim
 # The above versions should be automatically updated by dependabot
 # Hence minor versions are used to ensure a more frequent build to
 # catch regressions from new minor version earlier
